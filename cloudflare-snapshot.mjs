@@ -2,7 +2,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 
-export const FEED='https://vsbash-vip.ahmadclach2.workers.dev/api/leaderboard.json';
+export const FEED='https://vsbash-vip.vsbash.workers.dev/api/leaderboard.json';
 export function validateSnapshot(value,now=Math.floor(Date.now()/1000)) {
   if(!value||value.schema!==1||value.world!=='VSBASH'||value.source!=='cloudflare-d1'||typeof value.automaticResultReporting!=='boolean'||
     !Number.isSafeInteger(value.generatedAt)||value.generatedAt<1||value.generatedAt>now+300)throw Error('Invalid Cloudflare snapshot');

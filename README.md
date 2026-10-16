@@ -6,6 +6,8 @@ Public, read-only GitHub Pages snapshots for the in-world board. Championships a
 
 The Unity board and snapshot builder are prepared. This repository publishes public snapshots using GitHub Pages. **Automatic result ingestion is not connected yet.** `data/profiles.json` is intentionally empty; there are no fabricated players or scores.
 
+The public feed is live at [leaderboard.json](https://smslksa.github.io/vsbash-leaderboard/leaderboard.json). The Unity board is bound to this URL, and a real download through compiled Udon in ClientSim has passed. The changed world has not been uploaded yet.
+
 VRChat PlayerData is still the existing source of saved game progression. A GitHub Pages download does not upload PlayerData to GitHub. Automatic global reporting requires a separate identity-verified result bridge. Do not put GitHub tokens in Unity, Udon, PlayerData, a public repository, or a URL. Do not accept unverified browser-submitted totals as trusted game results.
 
 ## Publish reviewed data
@@ -24,6 +26,5 @@ New match rewards also require the standard numeric configuration: 4 balls, auth
 
 ## Remaining activation work
 
-1. Verify the GitHub Pages deployment and bind the published URL in Unity.
-2. Connect identity verification and authenticated result reporting to the external service. Test repeat submissions, reconnects, renamed players, and different instances before claiming automatic global updates.
-3. Test the feed in real VRChat with trusted URLs enabled by default, and upload the changed world after approval.
+1. Connect identity verification and authenticated result reporting to the external service. Test repeat submissions, reconnects, renamed players, and different instances before claiming automatic global updates.
+2. Test the feed in real VRChat with trusted URLs enabled by default, and upload the changed world after approval.

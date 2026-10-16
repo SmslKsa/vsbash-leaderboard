@@ -6,7 +6,7 @@ Public, read-only GitHub Pages snapshots for the in-world board. Championships a
 
 The ranking database is now hosted in the existing VSBASH Cloudflare D1 service. This repository mirrors its public JSON through GitHub Pages, scheduled every five minutes. **Automatic game-result ingestion is not connected yet.** The Cloudflare registry is empty; no fabricated players or scores were added. GitHub Actions scheduling and deployment can take longer than five minutes.
 
-Cloudflare source: [leaderboard.json](https://vsbash-vip.ahmadclach2.workers.dev/api/leaderboard.json). Service status: [leaderboard status](https://vsbash-vip.ahmadclach2.workers.dev/api/leaderboard/status). The allowlisted in-world URL remains [GitHub Pages leaderboard.json](https://smslksa.github.io/vsbash-leaderboard/leaderboard.json). No GitHub writing token is required by Cloudflare. The latest local display corrections have not been uploaded to VRChat.
+Cloudflare source: [leaderboard.json](https://vsbash-vip.vsbash.workers.dev/api/leaderboard.json). Service status: [leaderboard status](https://vsbash-vip.vsbash.workers.dev/api/leaderboard/status). The allowlisted in-world URL remains [GitHub Pages leaderboard.json](https://smslksa.github.io/vsbash-leaderboard/leaderboard.json). No GitHub writing token is required by Cloudflare. The latest local display corrections have not been uploaded to VRChat.
 
 VRChat PlayerData is still the existing source of saved game progression. A GitHub Pages download does not upload PlayerData to GitHub. Automatic global reporting requires a separate identity-verified result bridge. Do not put GitHub tokens in Unity, Udon, PlayerData, a public repository, or a URL. Do not accept unverified browser-submitted totals as trusted game results.
 

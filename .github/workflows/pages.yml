@@ -2,7 +2,9 @@ name: Publish VSBASH leaderboard
 on:
   push:
     branches: [main]
-    paths: ['data/**', 'build.mjs', 'build.test.mjs', '.github/workflows/pages.yml']
+    paths: ['data/**', '*.mjs', '.github/workflows/pages.yml']
+  schedule:
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Verify ranking and progression rules
-        run: node --test build.test.mjs
-      - name: Build approved public snapshot
-        run: node build.mjs
+        run: node --test build.test.mjs cloudflare-snapshot.test.mjs
+      - name: Mirror public rankings from Cloudflare D1
+        run: node cloudflare-snapshot.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

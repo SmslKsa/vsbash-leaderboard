@@ -20,6 +20,41 @@ jobs:
         run: node --test build.test.mjs cloudflare-snapshot.test.mjs
       - name: Mirror public rankings from Cloudflare D1
         run: node cloudflare-snapshot.mjs
+      - name: Mirror confirmed Soft Day supporter names
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import {mkdir,writeFile} from 'node:fs/promises';
+          const sources=['https://vsbash-vip.vsbash.workers.dev/api/softday-supporters.json',
+            'https://smslksa.github.io/vsbash-leaderboard/softday-supporters.json'];
+          function validate(doc,now=Math.floor(Date.now()/1000)) {
+            if(doc?.schema!==1||doc.tier!=='SOFT_DAY_VIP'||!Number.isSafeInteger(doc.generatedAt)||
+               !Number.isSafeInteger(doc.validUntil)||doc.generatedAt>now+60||doc.validUntil<=now||
+               doc.validUntil-doc.generatedAt!==1800||!Array.isArray(doc.supporters)||doc.supporters.length>2048)
+              throw Error('invalid_supporter_snapshot');
+            const seen=new Set();
+            for(const name of doc.supporters){
+              if(typeof name!=='string'||!name.length||name.length>128||/[<>\u0000-\u001f\u007f]/u.test(name)||seen.has(name))throw Error('invalid_supporter_name');
+              seen.add(name);
+            }
+            return {schema:1,tier:'SOFT_DAY_VIP',generatedAt:doc.generatedAt,validUntil:doc.validUntil,supporters:doc.supporters};
+          }
+          async function mirror(fetcher=fetch,directory='public') {
+            for(const source of sources){
+              try{
+                const response=await fetcher(source,{redirect:'error',signal:AbortSignal.timeout(15000)});
+                if(!response.ok)throw Error('supporter_download_unavailable');
+                const text=await response.text();if(text.length>262144)throw Error('supporter_snapshot_too_large');
+                const doc=validate(JSON.parse(text));
+                await mkdir(directory,{recursive:true});
+                await writeFile(directory+'/softday-supporters.json',JSON.stringify(doc)+'\n');
+                console.log('Soft Day supporter snapshot mirrored: '+doc.supporters.length+' names.');return true;
+              }catch{/* The existing leaderboard deployment remains independent. */}
+            }
+            console.log('Soft Day snapshot unavailable; no replacement supporter list was invented.');return false;
+          }
+          await mirror();
+          NODE
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

@@ -6,8 +6,7 @@ from PIL import Image,ImageOps,UnidentifiedImageError
 
 ROOT=Path(__file__).resolve().parent
 PUBLIC=ROOT/'public'
-API='https://vsbash-vip.vsbash.workers.dev/api/softday-vip-photos.json'
-MIRROR='https://smslksa.github.io/vsbash-leaderboard/softday-vip-photos.json'
+FEED_TTL=86400  # Each purchase also carries its own exact, non-renewing expiry.
 ALLOWED={'i.imgur.com','i.ibb.co','i.postimg.cc','cdn.discordapp.com','media.discordapp.net','raw.githubusercontent.com','images.unsplash.com','images.patreonusercontent.com'}
 
 def valid_url(url):
@@ -35,7 +34,7 @@ def validate_snapshot(doc,now=None):
     now=int(time.time()) if now is None else now
     if not isinstance(doc,dict) or doc.get('schema')!=1 or doc.get('tier')!='SOFT_DAY_PHOTOS':raise ValueError('invalid photo snapshot')
     start,end=doc.get('generatedAt'),doc.get('validUntil')
-    if type(start)!=int or type(end)!=int or start>now+60 or end<=now or end-start!=1800:raise ValueError('expired photo snapshot')
+    if type(start)!=int or type(end)!=int or start>now+60 or end<=now or end-start!=FEED_TTL:raise ValueError('expired photo snapshot')
     entries=doc.get('photos')
     if not isinstance(entries,list) or len(entries)>256:raise ValueError('invalid photo list')
     seen=set()
@@ -94,8 +93,8 @@ def build():
     poster()
     now=int(time.time())
     photos,names=activated_displays(json.loads((ROOT/'softday-vip-displays.json').read_text('utf-8-sig')),now)
-    document={'schema':1,'tier':'SOFT_DAY_PHOTOS','generatedAt':now,'validUntil':now+1800,'photos':photos}
-    (PUBLIC/'softday-purchase-names.json').write_text(json.dumps({'schema':1,'generatedAt':now,'validUntil':now+1800,'supporters':names},ensure_ascii=False)+'\n',encoding='utf-8')
+    document={'schema':1,'tier':'SOFT_DAY_PHOTOS','generatedAt':now,'validUntil':now+FEED_TTL,'photos':photos}
+    (PUBLIC/'softday-purchase-names.json').write_text(json.dumps({'schema':1,'generatedAt':now,'validUntil':now+FEED_TTL,'supporters':names},ensure_ascii=False)+'\n',encoding='utf-8')
     (PUBLIC/'photos').mkdir(exist_ok=True)
     published=[]
     for item in document['photos']:

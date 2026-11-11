@@ -2,7 +2,7 @@ name: Publish VSBASH leaderboard
 on:
   push:
     branches: [main]
-    paths: ['data/**', '*.mjs', '.github/workflows/pages.yml']
+    paths: ['data/**', '*.mjs', 'softday-*', 'softday_gallery_test.py', '.github/workflows/pages.yml']
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
@@ -55,6 +55,14 @@ jobs:
           }
           await mirror();
           NODE
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Build externally managed Soft Day art and confirmed VIP photos
+        run: |
+          python -m pip install --disable-pip-version-check pillow
+          python softday_gallery_test.py
+          python softday-gallery.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
